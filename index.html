@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hey Kanak ☕</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Pacifico&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: linear-gradient(135deg, #fdf6e3 0%, #fce4ec 35%, #e1f5fe 70%, #f3e5f5 100%);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .screen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; text-align: center; position: relative; }
+
+  .headline {
+    font-family: 'Pacifico', cursive;
+    font-size: clamp(1.6rem, 5vw, 2.8rem);
+    color: #c2185b;
+    text-shadow: 2px 2px 0 #f8bbd0;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+  }
+
+  .subtitle {
+    font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+    color: #7b6e8a;
+    margin-bottom: 2.5rem;
+    transition: all 0.3s ease;
+    min-height: 1.8rem;
+    font-weight: 600;
+  }
+
+  .btn-yes {
+    background: linear-gradient(135deg, #66bb6a, #43a047);
+    color: white;
+    border: none;
+    padding: 1rem 2.5rem;
+    border-radius: 50px;
+    font-size: 1.4rem;
+    font-weight: 800;
+    font-family: 'Nunito', sans-serif;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(76,175,80,0.4);
+    transition: transform 0.15s, box-shadow 0.15s;
+    letter-spacing: 1px;
+  }
+  .btn-yes:hover { transform: scale(1.08); box-shadow: 0 8px 28px rgba(76,175,80,0.55); }
+  .btn-yes:active { transform: scale(0.97); }
+
+  .btn-no {
+    background: linear-gradient(135deg, #ef5350, #c62828);
+    color: white;
+    border: none;
+    padding: 0.85rem 2rem;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    font-weight: 800;
+    font-family: 'Nunito', sans-serif;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(239,83,80,0.4);
+    letter-spacing: 1px;
+    position: fixed;
+    transition: box-shadow 0.1s;
+    z-index: 999;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .coffee-ticket {
+    background: white;
+    border-radius: 24px;
+    padding: 2rem 2.5rem;
+    max-width: 420px;
+    width: 100%;
+    box-shadow: 0 10px 40px rgba(194,24,91,0.15), 0 2px 8px rgba(0,0,0,0.08);
+    border: 3px dashed #f48fb1;
+    position: relative;
+    margin: 1.5rem auto;
+    animation: ticketBounce 0.8s cubic-bezier(.36,.07,.19,.97) both;
+  }
+
+  @keyframes ticketBounce {
+    0% { transform: scale(0.3) rotate(-10deg); opacity: 0; }
+    60% { transform: scale(1.08) rotate(2deg); opacity: 1; }
+    80% { transform: scale(0.95) rotate(-1deg); }
+    100% { transform: scale(1) rotate(0); }
+  }
+
+  .ticket-header {
+    background: linear-gradient(135deg, #f8bbd0, #f3e5f5);
+    border-radius: 14px;
+    padding: 1rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .ticket-title {
+    font-family: 'Pacifico', cursive;
+    color: #c2185b;
+    font-size: 1.3rem;
+  }
+
+  .ticket-subtitle { color: #7b6e8a; font-size: 0.85rem; margin-top: 0.3rem; font-weight: 600; }
+
+  .ticket-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px dashed #f8bbd0;
+    font-size: 0.9rem;
+  }
+
+  .ticket-row:last-child { border-bottom: none; }
+  .ticket-label { color: #9e9e9e; font-weight: 600; }
+  .ticket-value { color: #c2185b; font-weight: 800; }
+
+  .stamp {
+    position: absolute;
+    top: -16px;
+    right: 20px;
+    background: #c2185b;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 4px 14px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+    transform: rotate(3deg);
+    box-shadow: 0 3px 10px rgba(194,24,91,0.4);
+  }
+
+  .countdown-box {
+    background: linear-gradient(135deg, #e3f2fd, #e1f5fe);
+    border-radius: 16px;
+    padding: 1rem 1.5rem;
+    max-width: 340px;
+    width: 100%;
+    margin: 0 auto 1.5rem;
+    border: 2px solid #90caf9;
+    box-shadow: 0 4px 15px rgba(33,150,243,0.15);
+  }
+
+  .countdown-label { font-size: 0.8rem; color: #5c7ea8; font-weight: 700; margin-bottom: 0.4rem; }
+
+  .countdown-display {
+    font-size: clamp(1.8rem, 5vw, 2.5rem);
+    font-weight: 900;
+    color: #1565c0;
+    letter-spacing: 2px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .dora-text {
+    background: linear-gradient(135deg, #fce4ec, #f3e5f5);
+    border-radius: 20px;
+    padding: 1.2rem 1.8rem;
+    max-width: 440px;
+    width: 100%;
+    margin: 0 auto;
+    border: 2px solid #f48fb1;
+    font-size: clamp(0.85rem, 2.5vw, 1rem);
+    color: #ad1457;
+    font-weight: 700;
+    line-height: 1.6;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+  }
+
+  .cup-float { animation: floatCup 3s ease-in-out infinite; display: inline-block; }
+  @keyframes floatCup { 0%,100% { transform: translateY(0) rotate(-5deg); } 50% { transform: translateY(-12px) rotate(5deg); } }
+
+  .win-headline {
+    font-family: 'Pacifico', cursive;
+    font-size: clamp(1.8rem, 6vw, 3.2rem);
+    color: #c2185b;
+    text-shadow: 3px 3px 0 #f8bbd0, 1px 1px 0 #f48fb1;
+    margin-bottom: 0.5rem;
+    animation: wobble 1.5s ease-in-out 0.5s both;
+  }
+
+  @keyframes wobble {
+    0% { transform: rotate(0); }
+    15% { transform: rotate(-5deg); }
+    30% { transform: rotate(4deg); }
+    45% { transform: rotate(-4deg); }
+    60% { transform: rotate(3deg); }
+    75% { transform: rotate(-2deg); }
+    100% { transform: rotate(0); }
+  }
+
+  .badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #ffd54f, #ffca28);
+    color: #5d4037;
+    font-weight: 800;
+    font-size: 0.8rem;
+    padding: 4px 14px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+    margin-bottom: 1rem;
+    box-shadow: 0 3px 10px rgba(255,193,7,0.4);
+    border: 2px solid #ffb300;
+  }
+
+  .heart-shower { pointer-events: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; overflow: hidden; }
+  .heart { position: absolute; font-size: 1.5rem; animation: fallHeart linear infinite; opacity: 0; }
+  @keyframes fallHeart {
+    0% { transform: translateY(-60px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+  }
+
+  .date-btn {
+    padding: 0.6rem 1.2rem;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+    background: #fce4ec;
+    color: #c2185b;
+  }
+
+  .date-btn:hover {
+    background: #f48fb1;
+    color: white;
+    transform: scale(1.05);
+  }
+
+  .date-btn.selected {
+    background: #c2185b;
+    color: white;
+    border: 2px solid #880e4f;
+  }
+
+  .time-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    background: #c8e6c9;
+    color: #2e7d32;
+  }
+
+  .time-btn:hover {
+    background: #66bb6a;
+    color: white;
+    transform: scale(1.05);
+  }
+
+  .time-btn.selected {
+    background: #2e7d32;
+    color: white;
+  }
+</style>
+</head>
+<body>
+
+<!-- FLOATING HEARTS BACKGROUND (always present, hidden on screen 1) -->
+<div class="heart-shower" id="hearts"></div>
+
+<!-- ===== SCREEN 1: THE CHALLENGE ===== -->
+<div class="screen" id="screen1">
+  <div style="position:relative; z-index:1; max-width:600px; width:100%;">
+
+    <div class="cup-float" style="font-size:4rem; margin-bottom:1rem;">☕</div>
+
+    <h1 class="headline">Hey Kanak, Coffee peeloge<br>mere sath? 🤔</h1>
+
+    <p class="subtitle" id="subtitle-text">
+      (Choose wisely, Dora... your choice matters. Or does it? 🧭)
+    </p>
+
+    <div style="display:flex; gap:1.5rem; justify-content:center; align-items:center; flex-wrap:wrap; margin-top:0.5rem;">
+      <button class="btn-yes" onclick="goToYes()">
+        YES ☕✨
+      </button>
+    </div>
+
+    <p style="color:#b0bec5; font-size:0.78rem; margin-top:2.5rem; font-style:italic; font-weight:600;">
+      (There's also a "No" button somewhere on this page... good luck finding it 😈)
+    </p>
+  </div>
+</div>
+
+<!-- ===== SCREEN 2: THE WIN ===== -->
+<div class="screen" id="screen2" style="display:none; position:relative; z-index:1;">
+  <div style="max-width:500px; width:100%; position:relative; z-index:2;">
+
+    <div style="font-size:3rem; margin-bottom:0.5rem; animation: floatCup 2s ease-in-out infinite;">🎉</div>
+
+    <div class="badge">⭐ CONFIRMED ⭐</div>
+
+    <h1 class="win-headline">LET'S GOOO! 🎉<br>EXCELLENT CHOICE, DORA!</h1>
+
+    <p style="color:#7b6e8a; font-size:1rem; font-weight:600; margin-bottom:1.5rem;">
+      Sahi decision liya! Ab teri Dora journey mein ek naya chapter... ☕
+    </p>
+
+    <!-- COFFEE TICKET -->
+    <div class="coffee-ticket">
+      <div class="stamp">✅ VALID</div>
+      <div class="ticket-header">
+        <div style="font-size:2.5rem;">☕🎟️</div>
+        <div class="ticket-title">Official Coffee Date Pass</div>
+        <div class="ticket-subtitle">for Kanak (a.k.a. Dora) 🎒</div>
+      </div>
+      <div class="ticket-row">
+        <span class="ticket-label">Passenger</span>
+        <span class="ticket-value">Kanak "Dora" 🗺️</span>
+      </div>
+      <div class="ticket-row">
+        <span class="ticket-label">Order</span>
+        <span class="ticket-value">1x Coffee (Special) ☕</span>
+      </div>
+      <div class="ticket-row">
+        <span class="ticket-label">Host</span>
+        <span class="ticket-value">Your Annoying Friend 😄</span>
+      </div>
+      <div class="ticket-row">
+        <span class="ticket-label">Price</span>
+        <span class="ticket-value">FREE 🎉 (for you, ofc)</span>
+      </div>
+      <div class="ticket-row">
+        <span class="ticket-label">Status</span>
+        <span class="ticket-value" style="color:#2e7d32;">✅ CONFIRMED!</span>
+      </div>
+    </div>
+
+    <!-- COUNTDOWN -->
+    <div class="countdown-box">
+      <div class="countdown-label">⏳ Time left until you get annoyed by me again...</div>
+      <div class="countdown-display" id="countdown">00:00:00</div>
+      <div style="font-size:0.75rem; color:#90a4ae; font-weight:600; margin-top:0.3rem;">
+        (It's already happening, isn't it 😂)
+      </div>
+    </div>
+
+    <button class="btn-yes" style="margin-top:0.5rem;" onclick="goToSchedule()">
+      Ab batao — Kab milna hai? 📅
+    </button>
+
+    <p style="color:#bdbdbd; font-size:0.75rem; margin-top:1.2rem; font-style:italic; font-weight:600;">
+      Terms & Conditions apply. By clicking YES, you agreed to tolerate my jokes for at least 1 hour. 😂
+    </p>
+  </div>
+</div>
+
+<!-- ===== SCREEN 3: DATE PICKER ===== -->
+<div class="screen" id="screen3" style="display:none; position:relative; z-index:1;">
+  <div style="max-width:520px; width:100%; position:relative; z-index:2;">
+
+    <div style="font-size:3rem; margin-bottom:0.5rem; animation: floatCup 2.5s ease-in-out infinite;">📅</div>
+    <h1 class="headline" style="font-size:clamp(1.4rem,4vw,2.2rem);">Okay Dora, ab schedule karo! ☕</h1>
+    <p style="color:#7b6e8a; font-size:0.95rem; font-weight:600; margin: 0.5rem 0 1.8rem;">
+      Seriously, don't ghost me now — you've come this far! 🗺️
+    </p>
+
+    <!-- MONTH PICKER -->
+    <div style="background:white; border-radius:20px; padding:1.5rem; border:2px dashed #f48fb1; box-shadow:0 8px 30px rgba(194,24,91,0.1); margin-bottom:1.2rem;">
+      <p style="font-weight:800; color:#c2185b; font-size:1rem; margin-bottom:1rem;">📆 Konsa mahina theek rahega?</p>
+      <div id="monthGrid" style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px;"></div>
+    </div>
+
+    <!-- DATE PICKER -->
+    <div id="dateSection" style="background:white; border-radius:20px; padding:1.5rem; border:2px dashed #90caf9; box-shadow:0 8px 30px rgba(33,150,243,0.1); margin-bottom:1.2rem; display:none;">
+      <p style="font-weight:800; color:#1565c0; font-size:1rem; margin-bottom:1rem;">🗓️ Kaunsi tarikh suit karegi?</p>
+      <div id="dateGrid" style="display:grid; grid-template-columns:repeat(7,1fr); gap:6px;"></div>
+    </div>
+
+    <!-- CONFIRM SECTION -->
+    <div id="confirmSection" style="display:none;">
+      <div style="background:linear-gradient(135deg,#fce4ec,#f3e5f5); border-radius:20px; padding:1.5rem; border:2px solid #f48fb1; margin-bottom:1.2rem; animation: ticketBounce 0.6s cubic-bezier(.36,.07,.19,.97) both;">
+        <div style="font-size:2rem; margin-bottom:0.5rem;">🎉☕</div>
+        <p style="font-family:'Pacifico',cursive; color:#c2185b; font-size:1.3rem; margin-bottom:0.4rem;">Date Locked!</p>
+        <p style="color:#7b6e8a; font-weight:700; font-size:1rem;" id="chosenDateText"></p>
+        <p style="color:#9e9e9e; font-size:0.8rem; font-weight:600; margin-top:0.4rem;">Ek baar lock hua toh cancel nahi hoga, Dora! 😤</p>
+      </div>
+
+      <div style="background:white; border-radius:16px; padding:1.2rem; border:2px dashed #a5d6a7; box-shadow:0 4px 15px rgba(76,175,80,0.1); margin-bottom:1.2rem;">
+        <p style="font-weight:800; color:#2e7d32; font-size:0.95rem; margin-bottom:0.8rem;">🕐 Timing bhi decide karo:</p>
+        <div id="timeGrid" style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px;"></div>
+      </div>
+
+      <div id="finalConfirm" style="display:none; animation: ticketBounce 0.6s both;">
+        <div class="dora-text" style="margin-bottom:1rem;">
+          ✅ <strong id="finalText"></strong><br><br>
+          📸 <strong>Screenshot lo aur bhejo — tabhi coffee milegi! 😎☕</strong>
+        </div>
+        <p style="color:#bdbdbd; font-size:0.72rem; font-style:italic; font-weight:600; margin-top:0.8rem;">
+          Cancellation policy: Nahi hota. Ek baar haan bola toh pakka. 😂
+        </p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- THE SNEAKY NO BUTTON -->
+<button class="btn-no" id="noBtn" onmouseenter="runAway()" ontouchstart="runAway(event)" onclick="runAway()">
+  NO 🚫
+</button>
+
+<script>
+const guiltyMessages = [
+  "Maan jao yaar... 🥺",
+  "Please maan jao na! 🥺",
+  "Tumhe taras/daya nahi aati mujh par? 💔",
+  "Dora kahi ki, jyada nakhre mat karo! 🎒",
+  "Map me coffee shop ka rasta nahi mil rha kya? 🗺️"
+];
+
+const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const timeSlots = ["10:00 AM ☀️","12:00 PM 🌤️","2:00 PM ☕","4:00 PM 🍃","6:00 PM 🌇","8:00 PM 🌙"];
+
+let msgIndex = 0;
+let noBtn = document.getElementById('noBtn');
+let subtitleEl = document.getElementById('subtitle-text');
+let selectedMonth = null;
+let selectedDate = null;
+let selectedTime = null;
+
+function getRandomPos() {
+  const btnW = noBtn.offsetWidth || 120;
+  const btnH = noBtn.offsetHeight || 50;
+  const pad = 20;
+  const maxX = window.innerWidth - btnW - pad;
+  const maxY = window.innerHeight - btnH - pad;
+  const x = Math.floor(Math.random() * (maxX - pad) + pad);
+  const y = Math.floor(Math.random() * (maxY - pad) + pad);
+  return { x, y };
+}
+
+function placeNoButton() {
+  const pos = getRandomPos();
+  noBtn.style.left = pos.x + 'px';
+  noBtn.style.top = pos.y + 'px';
+}
+placeNoButton();
+
+function runAway(e) {
+  if (e) { e.preventDefault(); e.stopPropagation(); }
+  placeNoButton();
+  subtitleEl.textContent = guiltyMessages[msgIndex % guiltyMessages.length];
+  subtitleEl.style.color = '#e91e63';
+  subtitleEl.style.fontSize = '1.1rem';
+  msgIndex++;
+}
+
+function spawnHearts() {
+  const container = document.getElementById('hearts');
+  const heartChars = ['❤️','💖','💕','☕','🎉','✨','🎊'];
+  for (let i = 0; i < 18; i++) {
+    const h = document.createElement('div');
+    h.className = 'heart';
+    h.textContent = heartChars[Math.floor(Math.random() * heartChars.length)];
+    h.style.left = Math.random() * 100 + 'vw';
+    h.style.animationDuration = (3 + Math.random() * 5) + 's';
+    h.style.animationDelay = (Math.random() * 5) + 's';
+    h.style.fontSize = (1 + Math.random() * 1.5) + 'rem';
+    container.appendChild(h);
+  }
+}
+
+function startCountdown() {
+  let total = 15 * 60;
+  const el = document.getElementById('countdown');
+  const tick = () => {
+    total = total > 0 ? total - 1 : 0;
+    const m = String(Math.floor(total / 60)).padStart(2, '0');
+    const s = String(total % 60).padStart(2, '0');
+    el.textContent = `00:${m}:${s}`;
+    if (total > 0) setTimeout(tick, 1000);
+    else { el.textContent = "00:00:00 😂 (TOO LATE!)"; }
+  };
+  setTimeout(tick, 1000);
+}
+
+function fireConfetti() {
+  const colors = ['#ff6b6b','#ffd93d','#6bcb77','#4d96ff','#f48fb1','#f3e5f5'];
+  const end = Date.now() + 5000;
+  const fire = () => {
+    confetti({ particleCount: 60, spread: 100, origin: { x: Math.random(), y: 0.3 }, colors, scalar: 1.2 });
+    if (Date.now() < end) requestAnimationFrame(fire);
+  };
+  fire();
+  setTimeout(() => confetti({ particleCount: 150, spread: 160, origin: { x: 0.5, y: 0.5 }, colors: ['#ff6b6b','#ffd93d','#f48fb1'], scalar: 1.5 }), 500);
+  setTimeout(() => {
+    confetti({ particleCount: 80, angle: 60, spread: 70, origin: { x: 0 }, colors });
+    confetti({ particleCount: 80, angle: 120, spread: 70, origin: { x: 1 }, colors });
+  }, 1200);
+}
+
+function goToYes() {
+  document.getElementById('screen1').style.display = 'none';
+  noBtn.style.display = 'none';
+  document.getElementById('screen2').style.display = 'flex';
+  spawnHearts();
+  startCountdown();
+  fireConfetti();
+}
+
+function goToSchedule() {
+  document.getElementById('screen2').style.display = 'none';
+  document.getElementById('screen3').style.display = 'flex';
+  buildMonthGrid();
+  window.scrollTo(0, 0);
+}
+
+function buildMonthGrid() {
+  const grid = document.getElementById('monthGrid');
+  grid.innerHTML = '';
+  const now = new Date();
+  const curMonth = now.getMonth();
+  months.forEach((name, i) => {
+    const btn = document.createElement('button');
+    btn.textContent = name;
+    btn.className = 'date-btn';
+    btn.style.opacity = i < curMonth ? '0.5' : '1';
+    if (i < curMonth) {
+      btn.style.cursor = 'not-allowed';
+      btn.disabled = true;
+    } else {
+      btn.onclick = () => selectMonth(i, name, btn);
+    }
+    grid.appendChild(btn);
+  });
+}
+
+function selectMonth(idx, name, clickedBtn) {
+  selectedMonth = { idx, name };
+  selectedDate = null;
+  document.querySelectorAll('#monthGrid button').forEach(b => {
+    b.classList.remove('selected');
+  });
+  clickedBtn.classList.add('selected');
+  buildDateGrid(idx);
+  document.getElementById('dateSection').style.display = 'block';
+  document.getElementById('confirmSection').style.display = 'none';
+  document.getElementById('finalConfirm').style.display = 'none';
+  setTimeout(() => document.getElementById('dateSection').scrollIntoView({ behavior:'smooth', block:'nearest' }), 100);
+}
+
+function buildDateGrid(monthIdx) {
+  const grid = document.getElementById('dateGrid');
+  grid.innerHTML = '';
+  const year = new Date().getFullYear();
+  const daysInMonth = new Date(year, monthIdx + 1, 0).getDate();
+  const today = new Date();
+  const days = ['S','M','T','W','T','F','S'];
+  days.forEach(d => {
+    const lbl = document.createElement('div');
+    lbl.textContent = d;
+    lbl.style.cssText = 'font-size:0.7rem; font-weight:800; color:#90a4ae; text-align:center; padding:4px 0;';
+    grid.appendChild(lbl);
+  });
+  const firstDay = new Date(year, monthIdx, 1).getDay();
+  for (let i = 0; i < firstDay; i++) {
+    grid.appendChild(document.createElement('div'));
+  }
+  for (let d = 1; d <= daysInMonth; d++) {
+    const btn = document.createElement('button');
+    btn.textContent = d;
+    const isPast = new Date(year, monthIdx, d) < new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    btn.className = 'date-btn';
+    btn.style.opacity = isPast ? '0.5' : '1';
+    btn.style.aspectRatio = '1';
+    btn.style.padding = '0.3rem';
+    btn.style.borderRadius = '50%';
+    if (isPast) {
+      btn.style.cursor = 'not-allowed';
+      btn.disabled = true;
+    } else {
+      btn.onclick = () => selectDate(d, btn);
+    }
+    grid.appendChild(btn);
+  }
+}
+
+function selectDate(d, clickedBtn) {
+  selectedDate = d;
+  document.querySelectorAll('#dateGrid button').forEach(b => {
+    b.classList.remove('selected');
+  });
+  clickedBtn.classList.add('selected');
+  const dateStr = `${selectedMonth.name} ${d}, ${new Date().getFullYear()}`;
+  document.getElementById('chosenDateText').textContent = dateStr;
+  document.getElementById('confirmSection').style.display = 'block';
+  buildTimeGrid();
+  setTimeout(() => document.getElementById('confirmSection').scrollIntoView({ behavior:'smooth', block:'nearest' }), 100);
+}
+
+function buildTimeGrid() {
+  const grid = document.getElementById('timeGrid');
+  grid.innerHTML = '';
+  timeSlots.forEach((slot, idx) => {
+    const btn = document.createElement('button');
+    btn.textContent = slot;
+    btn.className = 'time-btn';
+    btn.onclick = () => selectTime(idx, btn);
+    grid.appendChild(btn);
+  });
+}
+
+function selectTime(idx, clickedBtn) {
+  selectedTime = idx;
+  document.querySelectorAll('#timeGrid button').forEach(b => {
+    b.classList.remove('selected');
+  });
+  clickedBtn.classList.add('selected');
+  const dateStr = `${selectedMonth.name} ${selectedDate}, ${new Date().getFullYear()}`;
+  const finalMsg = `☕ Coffee Date Confirmed! ☕\n\nDate: ${dateStr}\nTime: ${timeSlots[selectedTime]}\n\nSee you soon, Dora! 🗺️😄`;
+  document.getElementById('finalText').textContent = finalMsg;
+  document.getElementById('finalConfirm').style.display = 'block';
+  setTimeout(() => document.getElementById('finalConfirm').scrollIntoView({ behavior:'smooth', block:'nearest' }), 100);
+}
+
+window.addEventListener('resize', placeNoButton);
+</script>
+
+</body>
+</html>
